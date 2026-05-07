@@ -17,7 +17,7 @@ public class ModalListener extends ListenerAdapter {
 
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
-        if (event.getId().equals("survey")) {
+        if (event.getCustomId().equals("survey")) {
             String discordUsername = event.getUser().getName();
             String learn = event.getValue("learn").getAsString();
             String available = event.getValue("availability").getAsString();
