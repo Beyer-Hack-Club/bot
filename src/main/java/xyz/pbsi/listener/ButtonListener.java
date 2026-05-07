@@ -32,7 +32,7 @@ public class ButtonListener extends ListenerAdapter {
                         .setMaxLength(300)
                         .setRequired(false)
                         .build();
-                Modal modal = Modal.create("appeals", "Punishment Appeals")
+                Modal modal = Modal.create("survey", "Welcome Survey")
                         .addComponents(
                                 net.dv8tion.jda.api.components.label.Label.of("What do you want to learn next year?", learn),
                                 net.dv8tion.jda.api.components.label.Label.of("What days & times will you be available!", available),
