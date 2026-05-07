@@ -11,9 +11,7 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# The code currently needs this (dummy) .env file here otherwise it'll crash
-RUN touch .env
 
-COPY --from=builder /jbuild/build/dist/SoltideBot-1.0.jar .
+COPY --from=builder /jbuild/build/dist/HCBot-1.0.jar .
 
-ENTRYPOINT [ "java", "-jar", "SoltideBot-1.0.jar" ]
+ENTRYPOINT [ "java", "-jar", "HCBot-1.0.jar" ]
