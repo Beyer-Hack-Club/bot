@@ -19,6 +19,7 @@ public class ModalListener extends ListenerAdapter {
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         if (event.getCustomId().equals("survey")) {
             String discordUsername = event.getUser().getName();
+            String name = event.getValue("name").getAsString();
             String learn = event.getValue("learn").getAsString();
             String available = event.getValue("availability").getAsString();
             String experience = event.getValue("experience").getAsString();
@@ -35,9 +36,12 @@ public class ModalListener extends ListenerAdapter {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(new Color(35, 255, 0));
             eb.setTitle("Survey Input!");
+            eb.setThumbnail(event.getUser().getAvatarUrl());
+            eb.setFooter("Beyer Hack Club", event.getGuild().getIconUrl());
             eb.setDescription("**Discord Username: **" + discordUsername +
+                    "\n**Name: ** " + name +
                     "\n**Wants to learn: ** " + learn +
-                    "\n**Available during: **" + available +
+                    "\n**Availability: **" + available +
                     "\n**Experience: **" + experience +
                     "\n**Comments: **" + comments);
 
