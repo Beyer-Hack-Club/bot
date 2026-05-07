@@ -1,0 +1,6 @@
+/.gradle
+/build
+/Dockerfile
+/.dockerignore
+/compose.yaml
+/.env
