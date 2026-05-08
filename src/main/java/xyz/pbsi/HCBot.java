@@ -1,12 +1,10 @@
 package xyz.pbsi;
 
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import xyz.pbsi.listener.ButtonListener;
-import xyz.pbsi.listener.CommandListener;
-import xyz.pbsi.listener.DiscordEventListener;
-import xyz.pbsi.listener.ModalListener;
+import xyz.pbsi.listener.*;
 
 import javax.security.auth.login.LoginException;
 
@@ -30,7 +28,8 @@ public class HCBot {
         DefaultShardManagerBuilder builder =
                 DefaultShardManagerBuilder.createDefault(token)
                         .setActivity(Activity.playing("Hacking"))
-                        .addEventListeners(new DiscordEventListener(this), new CommandListener(), new ModalListener(), new ButtonListener());
+                        .addEventListeners(new DiscordEventListener(this), new CommandListener(), new ModalListener(), new ButtonListener(), new MemberJoin())
+                        .enableIntents(GatewayIntent.GUILD_MEMBERS);
         return builder.build();
 
     }
