@@ -12,9 +12,6 @@ public class ButtonListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
-
-        if(event.getChannelId().equals("1501831917425655878"))
-        {
             if(event.getComponentId().equals("open-survey"))
             {
                 TextInput name = TextInput.create("name", TextInputStyle.SHORT)
@@ -55,6 +52,5 @@ public class ButtonListener extends ListenerAdapter {
 
                 event.replyModal(modal).queue();
             }
-        }
     }
 }

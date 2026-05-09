@@ -27,7 +27,7 @@ public class HCBot {
     {
         DefaultShardManagerBuilder builder =
                 DefaultShardManagerBuilder.createDefault(token)
-                        .setActivity(Activity.playing("Hacking"))
+                        .setActivity(Activity.customStatus("Hacking the mainframe 💻"))
                         .addEventListeners(new DiscordEventListener(this), new CommandListener(), new ModalListener(), new ButtonListener(), new MemberJoin())
                         .enableIntents(GatewayIntent.GUILD_MEMBERS);
         return builder.build();

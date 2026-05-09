@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import xyz.pbsi.HCBot;
@@ -52,8 +55,13 @@ public class DiscordEventListener extends ListenerAdapter {
         Guild g = jda.getGuildById("1488731919037366482");
     if(g != null)
     {
-/*
         CommandListUpdateAction commands = g.updateCommands();
+        commands.addCommands(
+                Commands.slash("uptime", "Bot uptime"),
+                Commands.slash("info", "Some basic information about the club!")
+        ).queue();
+
+/*
         commands.addCommands(Commands.slash("example", "Example Command")
                 .addOption(OptionType.STRING, "String Option", "An Example String option",true),
                 Commands.slash("anotherexample", "We love examples")
