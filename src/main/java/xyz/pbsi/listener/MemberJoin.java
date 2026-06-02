@@ -16,7 +16,7 @@ public class MemberJoin implements EventListener {
             TextChannel channel = event.getGuild().getTextChannelById("1488744694749069323");
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Welcome!");
-            embedBuilder.setDescription("Welcome to the server," + user.getAsMention() +   "! You are member #" + event.getGuild().getMemberCount() + "!\nPlease fill out a [quick form](https://discord.com/channels/1488731919037366482/1501831917425655878/1501836684206276628) as it helps us plan!");
+            embedBuilder.setDescription("Welcome to the server, " + user.getAsMention() +   "! You are member #" + event.getGuild().getMemberCount() + "!\nPlease fill out a [quick form](https://discord.com/channels/1488731919037366482/1501831917425655878/1501836684206276628) as it helps us plan!");
             embedBuilder.setThumbnail(user.getAvatarUrl());
             embedBuilder.setFooter("Beyer Hack Club", event.getGuild().getIconUrl());
             assert channel != null;
