@@ -58,7 +58,8 @@ public class DiscordEventListener extends ListenerAdapter {
         CommandListUpdateAction commands = g.updateCommands();
         commands.addCommands(
                 Commands.slash("uptime", "Bot uptime"),
-                Commands.slash("info", "Some basic information about the club!")
+                Commands.slash("info", "Some basic information about the club!"),
+                Commands.slash("donate", "Provides the link to donate to the club!")
         ).queue();
 
 /*
