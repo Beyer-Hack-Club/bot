@@ -11,6 +11,7 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
+RUN touch .env
 
 COPY --from=builder /jbuild/build/dist/HCBot-1.0.jar .
 
