@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +61,13 @@ public class DiscordEventListener extends ListenerAdapter {
         commands.addCommands(
                 Commands.slash("uptime", "Bot uptime"),
                 Commands.slash("info", "Some basic information about the club!"),
-                Commands.slash("donate", "Provides the link to donate to the club!")
+                Commands.slash("donate", "Provides the link to donate to the club!"),
+                Commands.slash("update-website", "Updates either the latest announcement or the next meeting date on the website!").addOptions(
+                        new OptionData(OptionType.STRING, "value", "The value to update", true)
+                                .addChoice("Meeting", "Meeting")
+                                .addChoice("Announcement", "Announcement"),
+                        new OptionData(OptionType.STRING, "text", "The new value", true)
+                )
         ).queue();
 
 /*

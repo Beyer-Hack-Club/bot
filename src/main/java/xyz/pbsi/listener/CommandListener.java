@@ -1,5 +1,6 @@
 package xyz.pbsi.listener;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -9,6 +10,7 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
@@ -16,9 +18,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.sql.*;
+import java.util.Objects;
 
 public class CommandListener extends ListenerAdapter {
+    Dotenv dotenv = Dotenv.load();
+    String authorization = dotenv.get("SECRET");
     Long startTime = System.currentTimeMillis();
 
 
@@ -35,6 +46,9 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "donate":
                 donate(event);
+                break;
+            case "update-website":
+                updateWebsite(event);
                 break;
         }
     }
@@ -81,6 +95,33 @@ public class CommandListener extends ListenerAdapter {
         embedBuilder.setColor(Color.GREEN);
         Button donate = Button.link("https://hcb.hackclub.com/donations/start/beyer-hack-club", "Donate!");
         event.replyEmbeds(embedBuilder.build()).addComponents(ActionRow.of(donate)).setEphemeral(true).queue();
+    }
+    private void updateWebsite(SlashCommandInteractionEvent event)
+    {
+        if(!Objects.requireNonNull(event.getMember()).getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("1488731960053469337")))
+        {
+            event.reply("You do not have permission to use this!").setEphemeral(true).queue();
+            return;
+        }
+        String value = event.getOption("value").getAsString().toLowerCase();
+        String text = event.getOption("text").getAsString();
+        System.out.println("{\"" + value + "\":\"" + text + "\"}");
+        try{
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("https://api.beyerhack.club/website/update"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", authorization)
+                    .method("POST", HttpRequest.BodyPublishers.ofString("{\"" + value + "\":\"" + text + "\"}"))
+                    .build();
+            HttpClient.newBuilder()
+                    .build()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            event.reply("Updated value successfully").setEphemeral(true).queue();
+        }catch (URISyntaxException | IOException | InterruptedException e )
+        {
+            event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
+        }
+
     }
 
 }
