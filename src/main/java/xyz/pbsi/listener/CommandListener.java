@@ -98,14 +98,10 @@ public class CommandListener extends ListenerAdapter {
     }
     private void updateWebsite(SlashCommandInteractionEvent event)
     {
-        if(!Objects.requireNonNull(event.getMember()).getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("1488731960053469337")))
-        {
-            event.reply("You do not have permission to use this!").setEphemeral(true).queue();
-            return;
-        }
+        String requiredRole = "1488731960053469337";
+        if(!permissionCheck(event, requiredRole)) return;
         String value = event.getOption("value").getAsString().toLowerCase();
         String text = event.getOption("text").getAsString();
-        System.out.println("{\"" + value + "\":\"" + text + "\"}");
         try{
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI("https://api.beyerhack.club/website/update"))
@@ -116,12 +112,34 @@ public class CommandListener extends ListenerAdapter {
             HttpClient.newBuilder()
                     .build()
                     .send(request, HttpResponse.BodyHandlers.ofString());
-            event.reply("Updated value successfully").setEphemeral(true).queue();
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Update Website!").setColor(Color.BLUE).setDescription("Successfully updated \"" + value + "\" to \"" + text +  "\"!").setFooter("Beyer Hack Club").setThumbnail(event.getGuild().getIconUrl());
+            event.replyEmbeds(eb.build()).setEphemeral(true).queue();
         }catch (URISyntaxException | IOException | InterruptedException e )
         {
             event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
         }
+    }
 
+    /**
+     *
+     * @param event The slash command used.
+     * @param role The role to check whether the member has.
+     * @return Whether the member has the role.
+     */
+    public boolean permissionCheck(SlashCommandInteractionEvent event, String role)
+    {
+        if(!Objects.requireNonNull(event.getMember()).getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById(role)))
+        {
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("No Permission!").setColor(Color.RED).setDescription("You must have the <@&"+role+"> role to use this command!").setFooter("Beyer Hack Club");
+            event.replyEmbeds(eb.build()).setEphemeral(true).queue();
+            return false;
+        }
+        else {
+
+            return true;
+        }
     }
 
 }
