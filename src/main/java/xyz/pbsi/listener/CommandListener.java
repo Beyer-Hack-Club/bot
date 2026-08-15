@@ -124,38 +124,6 @@ public class CommandListener extends ListenerAdapter {
         }
     }
 
-    private void createGitAccount(SlashCommandInteractionEvent event)
-    {
-        String requiredRole = "1488732014982074408";
-        if(!permissionCheck(event, requiredRole)) return;
-        String value = event.getOption("username").getAsString().toLowerCase();
-        String text = event.getOption("text").getAsString();
-        try{
-            HashMap<String, String> webBody = new HashMap<>();
-            String tempPassword = UUID.randomUUID().toString();
-
-            webBody.put("username", "");
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://git.beyerhack.club/api/v1/users"))
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", apiKey)
-                    .method("POST", HttpRequest.BodyPublishers.ofString(
-                            "{\""
-                                    + value + "\":\"" + text  +
-                                    "\"}")
-                    )
-                    .build();
-            HttpClient.newBuilder()
-                    .build()
-                    .sendAsync(request, HttpResponse.BodyHandlers.ofString());
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle("Update Website!").setColor(Color.BLUE).setDescription("Successfully updated \"" + value + "\" to \"" + text +  "\"!").setFooter("Beyer Hack Club").setThumbnail(event.getGuild().getIconUrl());
-            event.replyEmbeds(eb.build()).setEphemeral(true).queue();
-        }catch (URISyntaxException e )
-        {
-            event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
-        }
-    }
 
     /**
      *
