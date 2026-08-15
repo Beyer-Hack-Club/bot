@@ -33,21 +33,21 @@ public class DiscordEventListener extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event)
     {
         registerCommands(bot.getShardManager());
-        //setupAction(bot.getShardManager());
-
     }
+
+
     public void setupAction(ShardManager jda)
     {
         Guild g = jda.getGuildById("1488731919037366482");
         assert g != null;
-        TextChannel channel = g.getTextChannelById("1501831917425655878");
+        TextChannel channel = g.getTextChannelById("1537685243425984562");
         assert channel != null;
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setColor(new Color(35, 255, 0));
-        embed.setTitle("Planning Survey!");
-        embed.setDescription("Have a second? Please fill out a quick survey to provide your input so that we can plan accordingly!");
+        embed.setColor(new Color(0, 150, 255));
+        embed.setTitle("Git Registration!");
+        embed.setDescription("Sign up for git.beyerhack.club! We'll be using this to store our code!");
         embed.setFooter("Beyer Hack Club");
-        Button openSurvey = Button.primary("open-survey", "Open Survey");
+        Button openSurvey = Button.success("git-signup", "Sign Up");
         channel.sendMessageEmbeds(embed.build()).addComponents(
                 ActionRow.of(openSurvey)
         ).queue();
@@ -55,6 +55,7 @@ public class DiscordEventListener extends ListenerAdapter {
     public void registerCommands(ShardManager jda)
     {
         Guild g = jda.getGuildById("1488731919037366482");
+        //setupAction(jda);
     if(g != null)
     {
         CommandListUpdateAction commands = g.updateCommands();

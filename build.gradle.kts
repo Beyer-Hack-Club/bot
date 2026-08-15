@@ -23,7 +23,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("commons-cli:commons-cli:1.5.0")
-}
+    implementation("com.google.code.gson:gson:2.13.2")}
 
 tasks.test {
     useJUnitPlatform()

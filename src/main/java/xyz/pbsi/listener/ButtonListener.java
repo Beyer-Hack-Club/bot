@@ -16,8 +16,41 @@ public class ButtonListener extends ListenerAdapter {
             {
                 survey(event);
             }
+            if(event.getComponentId().equals("git-signup"))
+            {
+                gitSignup(event);
+            }
     }
 
+
+    private void gitSignup(ButtonInteractionEvent event)
+    {
+       TextInput username = TextInput.create("username", TextInputStyle.SHORT)
+               .setPlaceholder("Please type in a username!")
+               .setMinLength(3)
+               .setMaxLength(16)
+               .setRequired(true)
+               .build();
+        TextInput fullName = TextInput.create("full-name", TextInputStyle.SHORT)
+                .setPlaceholder("Please type in a display name!")
+                .setMinLength(1)
+                .setMaxLength(32)
+                .setRequired(true)
+                .build();
+        TextInput email = TextInput.create("email", TextInputStyle.SHORT)
+                .setPlaceholder("Please type in your email! (Personal / School)")
+                .setMinLength(3)
+                .setMaxLength(64)
+                .setRequired(true)
+                .build();
+       Modal modal = Modal.create("git-signup", "Signup")
+               .addComponents(
+                       Label.of("Username", username),
+                       Label.of("Display Name", fullName),
+                       Label.of("Email", email)
+               ).build();
+       event.replyModal(modal).queue();
+    }
     private void survey(ButtonInteractionEvent event)
     {
         TextInput name = TextInput.create("name", TextInputStyle.SHORT)
