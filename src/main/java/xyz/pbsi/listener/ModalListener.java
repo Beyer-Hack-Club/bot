@@ -26,6 +26,7 @@ public class ModalListener extends ListenerAdapter {
     Dotenv dotenv = Dotenv.load();
     String apiKey = dotenv.get("APIKEY");
 
+
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
         if (event.getCustomId().equals("survey")) {
@@ -33,6 +34,10 @@ public class ModalListener extends ListenerAdapter {
         }
         if(event.getCustomId().equals("git-signup"))
         {
+            if(apiKey == null){
+                logger.error("Apikey is null");
+                return;
+            }
             gitSignup(event);
         }
     }
