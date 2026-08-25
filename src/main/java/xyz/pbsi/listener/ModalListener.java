@@ -1,5 +1,6 @@
 package xyz.pbsi.listener;
 
+import com.google.gson.Gson;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -8,6 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.pbsi.utils.Assets;
 import xyz.pbsi.utils.JSON;
 
 import java.awt.*;
@@ -44,6 +46,8 @@ public class ModalListener extends ListenerAdapter {
 
     private void gitSignup(ModalInteractionEvent event)
     {
+        event.deferReply().queue();
+        
         String username = getString(event, "username");
         String email = getString(event, "email");
         String fullName = getString(event, "full-name");
@@ -71,8 +75,11 @@ public class ModalListener extends ListenerAdapter {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             if(response.statusCode() != 201)
             {
+                Gson gson = new Gson();
+                HashMap<?, ?> hashMap = gson.fromJson(response.body(), HashMap.class);
+                String error = (String) hashMap.get("message");
                 embedBuilder.setTitle("Error");
-                embedBuilder.setDescription("An error has occurred! " + response.body());
+                embedBuilder.setDescription("An error has occurred! " + error);
                 embedBuilder.setColor(Color.red);
                 embedBuilder.setFooter("Beyer Hack Club", "https://s3.beyerhack.club/logos/raster/logo.png");
                 event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
@@ -117,7 +124,7 @@ public class ModalListener extends ListenerAdapter {
         eb.setColor(new Color(35, 255, 0));
         eb.setTitle("Survey Input!");
         eb.setThumbnail(event.getUser().getAvatarUrl());
-        eb.setFooter("Beyer Hack Club", event.getGuild().getIconUrl());
+        eb.setFooter("Beyer Hack Club", Assets.getLogo());
         eb.setDescription("**Discord Username: **" + discordUsername +
                 "\n**Name: ** " + name +
                 "\n**Wants to learn: ** " + learn +

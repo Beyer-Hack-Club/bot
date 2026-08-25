@@ -10,12 +10,13 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.pbsi.utils.Assets;
+import xyz.pbsi.utils.JSON;
 
 import java.awt.*;
 import java.io.IOException;
@@ -27,12 +28,10 @@ import java.net.http.HttpResponse;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.UUID;
 
 public class CommandListener extends ListenerAdapter {
     Dotenv dotenv = Dotenv.load();
     String authorization = dotenv.get("SECRET");
-    String apiKey = dotenv.get("APIKEY");
     Long startTime = System.currentTimeMillis();
 
 
@@ -66,8 +65,8 @@ public class CommandListener extends ListenerAdapter {
         embedBuilder.setTitle("Uptime");
         embedBuilder.setDescription("Current uptime: " + hours + " hours, " + min + " minutes, and " + seconds + " seconds.\nOnline since <t:" + (startTime/1000) +":F>.");
         embedBuilder.setColor(Color.GREEN);
-        embedBuilder.setFooter("Beyer Hack Club", event.getGuild().getIconUrl());
-        embedBuilder.setThumbnail(event.getGuild().getIconUrl());
+        embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
+        embedBuilder.setThumbnail(Assets.getLogo());
         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
     }
     private void info(SlashCommandInteractionEvent event)
@@ -101,22 +100,54 @@ public class CommandListener extends ListenerAdapter {
     }
     private void updateWebsite(SlashCommandInteractionEvent event)
     {
+        event.deferReply().queue();
+        HttpClient client = HttpClient.newHttpClient();
         String requiredRole = "1488731960053469337";
         if(!permissionCheck(event, requiredRole)) return;
         String value = event.getOption("value").getAsString().toLowerCase();
         String text = event.getOption("text").getAsString();
+        HashMap<String, String> values = new HashMap<>();
+        values.put(value, text);
+        String json = JSON.hashMapToJSON(values);
         try{
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI("https://api.beyerhack.club/website/update"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", authorization)
-                    .method("POST", HttpRequest.BodyPublishers.ofString("{\"" + value + "\":\"" + text + "\"}"))
+                    .method("POST", HttpRequest.BodyPublishers.ofString(json))
                     .build();
-            HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if(response.statusCode() != 200)
+            {
+                logger.warn(response.body());
+            }
+            if(response.statusCode() == 403)
+            {
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setTitle("Error");
+                eb.setDescription("The api key is not valid!");
+                eb.setColor(Color.red);
+                event.replyEmbeds(eb.build()).setEphemeral(true).queue();
+                return;
+            } else if (response.statusCode() != 200) {
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setTitle("Error");
+                eb.setDescription("An error has occurred! Status Code: " + response.statusCode());
+                eb.setColor(Color.red);
+                event.replyEmbeds(eb.build()).setEphemeral(true).queue();
+                return;
+            }
             EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle("Update Website!").setColor(Color.BLUE).setDescription("Successfully updated \"" + value + "\" to \"" + text +  "\"!").setFooter("Beyer Hack Club").setThumbnail(event.getGuild().getIconUrl());
+            String embedMessage = "";
+            if(value.equals("announcement"))
+            {
+                embedMessage = "latest announcement to `";
+            }
+            if(value.equals("meeting"))
+            {
+                embedMessage = "next meetings's info to `";
+            }
+            eb.setTitle("Updated Website!").setColor(Color.BLUE).setDescription("Set the " + embedMessage + text + "`.").setFooter("Beyer Hack Club").setThumbnail(Assets.getLogo());
             event.replyEmbeds(eb.build()).setEphemeral(true).queue();
         }catch (URISyntaxException | IOException | InterruptedException e )
         {
