@@ -100,7 +100,7 @@ public class CommandListener extends ListenerAdapter {
     }
     private void updateWebsite(SlashCommandInteractionEvent event)
     {
-        event.deferReply().queue();
+        event.deferReply().setEphemeral(true).queue();
         HttpClient client = HttpClient.newHttpClient();
         String requiredRole = "1488731960053469337";
         if(!permissionCheck(event, requiredRole)) return;
@@ -148,7 +148,7 @@ public class CommandListener extends ListenerAdapter {
                 embedMessage = "next meetings's info to `";
             }
             eb.setTitle("Updated Website!").setColor(Color.BLUE).setDescription("Set the " + embedMessage + text + "`.").setFooter("Beyer Hack Club").setThumbnail(Assets.getLogo());
-            event.replyEmbeds(eb.build()).setEphemeral(true).queue();
+            event.getHook().sendMessageEmbeds(eb.build()).setEphemeral(true).queue();
         }catch (URISyntaxException | IOException | InterruptedException e )
         {
             event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();

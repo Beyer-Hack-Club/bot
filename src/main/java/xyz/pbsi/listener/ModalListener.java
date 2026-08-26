@@ -90,7 +90,7 @@ public class ModalListener extends ListenerAdapter {
                 embedBuilder.setDescription("Username: `" + username + "`\nPassword: `" +tempPassword + "`\n*You will have to update your password upon signing in.*");
                 embedBuilder.setColor(new Color(23, 223, 62));
                 embedBuilder.setFooter("Beyer Hack Club", "https://s3.beyerhack.club/logos/raster/logo.png");
-                event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+                event.getHook().sendMessageEmbeds(embedBuilder.build()).setEphemeral(true).queue();
                 event.getUser().openPrivateChannel().flatMap(
                         channel -> channel.sendMessageEmbeds(embedBuilder.build())
                 ).queue();
