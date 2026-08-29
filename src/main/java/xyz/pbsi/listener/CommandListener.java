@@ -103,7 +103,7 @@ public class CommandListener extends ListenerAdapter {
         event.deferReply().setEphemeral(true).queue();
         HttpClient client = HttpClient.newHttpClient();
         String requiredRole = "1488731960053469337";
-        if(!permissionCheck(event, requiredRole)) return;
+        if(!permissionCheck(event, requiredRole, true)) return;
         String value = event.getOption("value").getAsString().toLowerCase();
         String text = event.getOption("text").getAsString();
         HashMap<String, String> values = new HashMap<>();
@@ -151,7 +151,7 @@ public class CommandListener extends ListenerAdapter {
             event.getHook().sendMessageEmbeds(eb.build()).setEphemeral(true).queue();
         }catch (URISyntaxException | IOException | InterruptedException e )
         {
-            event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
+            event.getHook().sendMessage("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
         }
     }
 
@@ -162,13 +162,21 @@ public class CommandListener extends ListenerAdapter {
      * @param role The role to check whether the member has.
      * @return Whether the member has the role.
      */
-    public boolean permissionCheck(SlashCommandInteractionEvent event, String role)
+    public boolean permissionCheck(SlashCommandInteractionEvent event, String role, boolean deferred)
     {
         if(!Objects.requireNonNull(event.getMember()).getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById(role)))
         {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle("No Permission!").setColor(Color.RED).setDescription("You must have the <@&"+role+"> role to use this command!").setFooter("Beyer Hack Club");
-            event.replyEmbeds(eb.build()).setEphemeral(true).queue();
+
+            if(deferred)
+            {
+                event.getHook().sendMessageEmbeds(eb.build()).setEphemeral(true).queue();
+            }
+            else{
+                event.replyEmbeds(eb.build()).setEphemeral(true).queue();
+
+            }
             return false;
         }
         else {

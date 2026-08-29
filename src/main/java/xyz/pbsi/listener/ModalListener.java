@@ -82,7 +82,7 @@ public class ModalListener extends ListenerAdapter {
                 embedBuilder.setDescription("An error has occurred! " + error);
                 embedBuilder.setColor(Color.red);
                 embedBuilder.setFooter("Beyer Hack Club", "https://s3.beyerhack.club/logos/raster/logo.png");
-                event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+                event.getHook().sendMessageEmbeds(embedBuilder.build()).setEphemeral(true).queue();
 
             }
             else {
