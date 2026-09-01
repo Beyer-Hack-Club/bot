@@ -77,7 +77,7 @@ public class CommandListener extends ListenerAdapter {
         TextDisplay hackClub = TextDisplay.of("**What is a Hack Club?**");
         TextDisplay hackClubInfo = TextDisplay.of("Hack Club is a non profit organizations which provides resources for programming clubs, such as fundraising tools, activities, and platforms to share your code! Beyer Hack Club is Hack Club chapter.\nMore info can be found [here](https://hack.club/clubs)!");
         TextDisplay meetings = TextDisplay.of("**When will meetings be?**");
-        TextDisplay meetingsInfo = TextDisplay.of("Currently the dates are not set in stone. The goal is 1-2 meetings per week of a length of 60 - 90 minutes. We'll have a better idea of dates when the club gets closer to being created, which will be the start of the next school year!");
+        TextDisplay meetingsInfo = TextDisplay.of("Meetings will be every Tuesday after school in the robotics shop! ");
         TextDisplay surveyText = TextDisplay.of("Want to help decide dates and activities?");
         TextDisplay fiscalSponsorship = TextDisplay.of("-# Beyer Hack Club is fiscally sponsored by The Hack Foundation (d.b.a. Hack Club), a 501(c)(3) nonprofit (EIN: 81-2908499). [Learn more](https://hackclub.com/fiscal-sponsorship) | [View our financials](https://hcb.hackclub.com/beyer-hack-club)");
         Section section = Section.of(Button.primary("open-survey", "Open Survey"), surveyText);
