@@ -26,6 +26,7 @@ import java.util.UUID;
 public class ModalListener extends ListenerAdapter {
     private static Logger logger = LoggerFactory.getLogger(CommandListener.class);
     Dotenv dotenv = Dotenv.load();
+    String authorization = dotenv.get("SECRET");
     String apiKey = dotenv.get("APIKEY");
 
 
@@ -41,6 +42,10 @@ public class ModalListener extends ListenerAdapter {
                 return;
             }
             gitSignup(event);
+        }
+        if(event.getCustomId().equals("logs"))
+        {
+            submitLog(event);
         }
     }
 
@@ -101,7 +106,74 @@ public class ModalListener extends ListenerAdapter {
         }
     }
 
+    private void submitLog(ModalInteractionEvent event)
+    {
+        event.deferReply(true).queue();
+        String dateAndDuration = getString(event, "date");
+        String objective = getString(event, "objective");
+        String activities = getString(event, "activities");
+        String oldNews = getString(event, "old");
+        String newNews = getString(event, "new");
+        String date  = "";
+        String duration = "";
+        if(!dateAndDuration.contains("|"))
+        {
+            event.getHook().sendMessage("You need to format the date / duration correctly!").setEphemeral(true).queue();
+            return;
+        }
+        boolean settingDate = true;
+        for (int i = 0; i < dateAndDuration.length(); i++) {
+            if(dateAndDuration.charAt(i) == '|')
+            {
+                settingDate = false;
+                i++;
+            }
+            if(settingDate)
+            {
+                date = date.concat(String.valueOf(dateAndDuration.charAt(i)));
+            }
+            else{
+                duration = duration.concat(String.valueOf(dateAndDuration.charAt(i)));
+            }
+        }
 
+        String apiURL = "https://api.beyerhack.club/logs/meeting";
+
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            HashMap<String, String> webBody = new HashMap<>();
+            webBody.put("date", date);
+            webBody.put("duration", duration);
+            webBody.put("objective", objective);
+            webBody.put("activities", activities);
+            webBody.put("old", oldNews);
+            webBody.put("new", newNews);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(apiURL))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", authorization)
+                    .method("POST", HttpRequest.BodyPublishers.ofString(JSON.hashMapToJSON(webBody)
+                    ))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            if(response.statusCode() != 200)
+            {
+                logger.error("{}{}", response.statusCode(), response.body());
+
+            }
+            else {
+                embedBuilder.setTitle("Submitted Meeting log! :white_check_mark:");
+                embedBuilder.setDescription("Successfully submitted meeting log!");
+                embedBuilder.setColor(new Color(23, 223, 62));
+            }
+            embedBuilder.setFooter("Beyer Hack Club", "https://s3.beyerhack.club/logos/raster/logo.png");
+            event.getHook().sendMessageEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+
+        } catch (URISyntaxException | InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private void survey(ModalInteractionEvent event)
     {

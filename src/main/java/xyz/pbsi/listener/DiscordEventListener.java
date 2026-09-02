@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -61,6 +60,7 @@ public class DiscordEventListener extends ListenerAdapter {
         CommandListUpdateAction commands = g.updateCommands();
         commands.addCommands(
                 Commands.slash("uptime", "Bot uptime"),
+                Commands.slash("log", "Adds a new log to the website"),
                 Commands.slash("info", "Some basic information about the club!"),
                 Commands.slash("donate", "Provides the link to donate to the club!"),
                 Commands.slash("update-website", "Updates either the latest announcement or the next meeting date on the website!").addOptions(
