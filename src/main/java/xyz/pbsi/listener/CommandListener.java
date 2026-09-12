@@ -1,5 +1,6 @@
 package xyz.pbsi.listener;
 
+import com.google.gson.Gson;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -19,11 +20,13 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Text;
 import xyz.pbsi.utils.Assets;
 import xyz.pbsi.utils.JSON;
+import xyz.pbsi.utils.Member;
 
 import java.awt.*;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -58,6 +61,12 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "log":
                 log(event);
+                break;
+            case "add-member":
+                addMember(event);
+                break;
+            case "get-member":
+                getMember(event);
                 break;
         }
     }
@@ -104,6 +113,42 @@ public class CommandListener extends ListenerAdapter {
         embedBuilder.setColor(Color.GREEN);
         Button donate = Button.link("https://hcb.hackclub.com/donations/start/beyer-hack-club", "Donate!");
         event.replyEmbeds(embedBuilder.build()).addComponents(ActionRow.of(donate)).setEphemeral(true).queue();
+    }
+
+    private void addMember(SlashCommandInteractionEvent event)
+    {
+        if(!permissionCheck(event, "1488731960053469337", false)) return;
+        TextInput json = TextInput.create("json", TextInputStyle.PARAGRAPH)
+                .setRequired(true)
+                .build();
+        Modal modal = Modal.create("create-user", "Create a user").addComponents(
+                Label.of("json", json)
+        ).build();
+        event.replyModal(modal).queue();
+    }
+    private void getMember(SlashCommandInteractionEvent event){
+        if(!permissionCheck(event, "1488731960053469337", false)) return;
+        String memberID = event.getOption("id").getAsString();
+        File file = new File("/bhc/members/" + memberID + ".json");
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            Member member = new Gson().fromJson(reader, Member.class);
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle("Member - " + member.getFirstName());
+            embedBuilder.setDescription("**First Name**: " + member.getFirstName()
+            +"\n**Last Name**: " + member.getLastName() +
+                    "\n**Preferred Name**: " + member.getPreferredName() +
+                    "\n**Pronouns**: " + member.getPronouns()+
+                    "\n**Email**: " + member.getEmail() +
+                    "\n**Phone Number**: " + member.getEmail() +
+                    "\n**Equipment Contract**: " + member.getEquipmentContract()+
+                    "\n**Permission Slip** " + member.getPermissionSlip());
+            embedBuilder.setColor(Color.blue);
+            embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
+            event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+        } catch (FileNotFoundException e) {
+            event.reply("Error, member not found").setEphemeral(true).queue();
+        }
     }
     private void updateWebsite(SlashCommandInteractionEvent event)
     {

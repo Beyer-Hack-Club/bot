@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -57,6 +58,12 @@ public class DiscordEventListener extends ListenerAdapter {
         //setupAction(jda);
     if(g != null)
     {
+        g.retrieveCommands().queue(commands -> {
+            for (Command command: commands){
+                command.delete().queue();
+            }
+        });
+
         CommandListUpdateAction commands = g.updateCommands();
         commands.addCommands(
                 Commands.slash("uptime", "Bot uptime"),
@@ -68,7 +75,11 @@ public class DiscordEventListener extends ListenerAdapter {
                                 .addChoice("Meeting", "Meeting")
                                 .addChoice("Announcement", "Announcement"),
                         new OptionData(OptionType.STRING, "text", "The new value", true)
-                )
+                ),
+                Commands.slash("add-member", "Adds a member"),
+                Commands.slash("get-member", "Gets a members info").addOptions(new OptionData(
+                        OptionType.STRING, "id", "The Student ID of the member", true
+                ))
         ).queue();
 
 /*

@@ -11,8 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.pbsi.utils.Assets;
 import xyz.pbsi.utils.JSON;
+import xyz.pbsi.utils.Member;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,6 +49,10 @@ public class ModalListener extends ListenerAdapter {
         if(event.getCustomId().equals("logs"))
         {
             submitLog(event);
+        }
+        if(event.getCustomId().equals("create-user"))
+        {
+            createUser(event);
         }
     }
 
@@ -206,6 +213,38 @@ public class ModalListener extends ListenerAdapter {
 
         channel.sendMessageEmbeds(eb.build()).queue();
         event.reply("Thanks for submitting a response!").setEphemeral(true).queue();
+    }
+
+    private void createUser(ModalInteractionEvent event)
+    {
+        String json = getString(event, "json");
+        Gson gson = new Gson();
+        Member member = gson.fromJson(json, Member.class);
+         String id = member.getStudentID();
+        File folder = new File("/bhc/members/");
+        if(!folder.exists()) {
+            event.reply("Making folder").setEphemeral(true).queue();
+            if (!folder.mkdirs()) {
+                event.reply("Something went wrong, see logs.").setEphemeral(true).queue();
+                return;
+            }
+        }
+        File file = new File(folder + "/" + id+".json");
+        if(file.exists())
+        {
+            event.reply("err (exists)").setEphemeral(true).queue();
+            return;
+        }
+        try{
+            FileWriter fileWriter = new FileWriter(folder + "/" + id + ".json");
+            fileWriter.write(json);
+            fileWriter.close();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            event.reply(e.getMessage()).setEphemeral(true).queue();
+            return;
+        }
+         event.reply("Successfully created user").setEphemeral(true).queue();
     }
 
     /**
