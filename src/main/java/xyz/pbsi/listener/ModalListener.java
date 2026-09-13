@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +15,7 @@ import xyz.pbsi.utils.JSON;
 import xyz.pbsi.utils.Member;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -35,24 +34,32 @@ public class ModalListener extends ListenerAdapter {
 
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
-        if (event.getCustomId().equals("survey")) {
-            survey(event);
-        }
-        if(event.getCustomId().equals("git-signup"))
-        {
-            if(apiKey == null){
-                logger.error("Apikey is null");
-                return;
-            }
-            gitSignup(event);
-        }
-        if(event.getCustomId().equals("logs"))
-        {
-            submitLog(event);
-        }
-        if(event.getCustomId().equals("create-user"))
-        {
-            createUser(event);
+        switch (event.getCustomId()){
+            case "survey":
+                survey(event);
+                break;
+            case "git-signup":
+                if(apiKey == null){
+                    logger.error("Apikey is null");
+                    return;
+                }
+                gitSignup(event);
+                break;
+            case "logs":
+                submitLog(event);
+                break;
+            case "create-user":
+                createUser(event);
+                break;
+            case "edit-member":
+                editUser(event);
+                break;
+            case "get-member":
+                getMember(event);
+                break;
+            default:
+                event.reply("This modal is misconfigured (Err. Lacking function!)").setEphemeral(true).queue();
+                break;
         }
     }
 
@@ -215,6 +222,81 @@ public class ModalListener extends ListenerAdapter {
         event.reply("Thanks for submitting a response!").setEphemeral(true).queue();
     }
 
+    private void editUser(ModalInteractionEvent event)
+    {
+        try{
+            Gson gson = new Gson();
+            String memberID =  event.getValue("member-select").getAsStringList().getFirst();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("/var/lib/bhc/" + memberID + ".json"));
+            Member member = gson.fromJson(bufferedReader, Member.class);
+
+            String valueEditing = event.getValue("edit-value").getAsStringList().getFirst();
+            String newValue = event.getValue("new-value").getAsString();
+            switch (valueEditing){
+                case "first-name":
+                    member.setFirstName(newValue);
+                    break;
+                case "last-name":
+                    member.setLastName(newValue);
+                    break;
+                case "preferred-name":
+                    member.setPreferredName(newValue);
+                    break;
+                case "pronouns":
+                    member.setPronouns(newValue);
+                case "phone-number":
+                    member.setPronouns(newValue);
+                    break;
+                case "email":
+                    member.setEmail(newValue);
+                    break;
+                case "permission-slip":
+                    member.setPermissionSlip(newValue.equalsIgnoreCase("true"));
+                    break;
+                case "equipment-contract":
+                    member.setEquipmentContract(newValue.equalsIgnoreCase("true"));
+                    break;
+            }
+            try{
+                FileWriter fileWriter = new FileWriter("/var/lib/bhc/" + memberID + ".json");
+                fileWriter.write(gson.toJson(member));
+                fileWriter.close();
+                event.reply("Successfully edited " + valueEditing + " to " + newValue + "!").setEphemeral(true).queue();
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
+            }
+        }catch (IOException e){
+            logger.error(e.getMessage());
+            event.reply("Couldn't edit value, does the member exist?").setEphemeral(true).queue();
+        }
+
+    }
+
+    private void getMember(ModalInteractionEvent event)
+    {
+        String memberID = event.getValue("member-select").getAsStringList().getFirst();
+        File file = new File("/var/lib/bhc/" + memberID + ".json");
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            Member member = new Gson().fromJson(reader, Member.class);
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle("Member - " + member.getFirstName());
+            embedBuilder.setDescription("**First Name**: " + member.getFirstName()
+                    +"\n**Last Name**: " + member.getLastName() +
+                    "\n**Preferred Name**: " + member.getPreferredName() +
+                    "\n**Pronouns**: " + member.getPronouns()+
+                    "\n**Email**: " + member.getEmail() +
+                    "\n**Phone Number**: " + member.getEmail() +
+                    "\n**Equipment Contract**: " + member.getEquipmentContract()+
+                    "\n**Permission Slip** " + member.getPermissionSlip());
+            embedBuilder.setColor(Color.blue);
+            embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
+            event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
+        } catch (FileNotFoundException e) {
+            event.reply("Error, member not found").setEphemeral(true).queue();
+        }
+    }
     private void createUser(ModalInteractionEvent event)
     {
         String json = getString(event, "json");

@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
@@ -34,7 +36,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class CommandListener extends ListenerAdapter {
@@ -71,6 +75,9 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "reset-and-stop":
                 resetAndStop(event);
+                break;
+            case "edit-member":
+                editMember(event);
                 break;
         }
     }
@@ -119,6 +126,7 @@ public class CommandListener extends ListenerAdapter {
         event.replyEmbeds(embedBuilder.build()).addComponents(ActionRow.of(donate)).setEphemeral(true).queue();
     }
 
+
     private void addMember(SlashCommandInteractionEvent event)
     {
         if(!permissionCheck(event, "1488731960053469337", false)) return;
@@ -130,29 +138,81 @@ public class CommandListener extends ListenerAdapter {
         ).build();
         event.replyModal(modal).queue();
     }
+
+    private void editMember(SlashCommandInteractionEvent event){
+        if(!permissionCheck(event, "1488731960053469337", false)) return;
+        Gson gson = new Gson();
+        StringSelectMenu.Builder menuBuilder = StringSelectMenu.create("member-select")
+                .setPlaceholder("Select a member")
+                .setRequiredRange(1,1)
+                .setRequired(true);
+
+            File folder = new File("/var/lib/bhc");
+            String[] folderList = folder.list();
+            try{
+                if(folderList != null)
+                {
+                    for (String s : folderList) {
+                        BufferedReader bufferedReader = new BufferedReader(new FileReader("/var/lib/bhc/" + s));
+                        String formattedArg = s.replace(".json", "");
+                        Member member = gson.fromJson(bufferedReader, Member.class);
+                        menuBuilder = menuBuilder.addOption(formattedArg + " | " + member.getFirstName(), formattedArg);
+                    }
+
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
+            }
+            StringSelectMenu editValue = StringSelectMenu.create("edit-value")
+                    .addOption("First Name", "first-name")
+                    .addOption("Last Name", "last-name")
+                    .addOption("Preferred Name", "preferred-name")
+                    .addOption("Pronouns", "pronouns")
+                    .addOption("Phone Number", "phone-number")
+                    .addOption("Email", "email")
+                    .addOption("Permission Slip", "permission-slip")
+                    .addOption("Contract", "equipment-contract")
+                    .setRequiredRange(1,1)
+                    .build();
+            TextInput value = TextInput.create("new-value",  TextInputStyle.SHORT).build();
+        Modal modal = Modal.create("edit-member", "Edit a member").addComponents(
+                Label.of("Member", menuBuilder.build()),
+                Label.of("Value to edit", editValue),
+                Label.of("New Value", value)
+        ).build();
+        event.replyModal(modal).queue();
+    }
+
     private void getMember(SlashCommandInteractionEvent event){
         if(!permissionCheck(event, "1488731960053469337", false)) return;
-        String memberID = event.getOption("id").getAsString();
-        File file = new File("/var/lib/bhc/" + memberID + ".json");
+        Gson gson = new Gson();
+        StringSelectMenu.Builder menuBuilder = StringSelectMenu.create("member-select")
+                .setPlaceholder("Select a member")
+                .setRequiredRange(1,1)
+                .setRequired(true);
+
+        File folder = new File("/var/lib/bhc");
+        String[] folderList = folder.list();
         try{
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            Member member = new Gson().fromJson(reader, Member.class);
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle("Member - " + member.getFirstName());
-            embedBuilder.setDescription("**First Name**: " + member.getFirstName()
-            +"\n**Last Name**: " + member.getLastName() +
-                    "\n**Preferred Name**: " + member.getPreferredName() +
-                    "\n**Pronouns**: " + member.getPronouns()+
-                    "\n**Email**: " + member.getEmail() +
-                    "\n**Phone Number**: " + member.getEmail() +
-                    "\n**Equipment Contract**: " + member.getEquipmentContract()+
-                    "\n**Permission Slip** " + member.getPermissionSlip());
-            embedBuilder.setColor(Color.blue);
-            embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
-            event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
-        } catch (FileNotFoundException e) {
-            event.reply("Error, member not found").setEphemeral(true).queue();
+            if(folderList != null)
+            {
+                for (String s : folderList) {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader("/var/lib/bhc/" + s));
+                    String formattedArg = s.replace(".json", "");
+                    Member member = gson.fromJson(bufferedReader, Member.class);
+                    menuBuilder = menuBuilder.addOption(formattedArg + " | " + member.getFirstName(), formattedArg);
+                }
+
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
         }
+        Modal modal = Modal.create("get-member", "Get a member's info").addComponents(
+                Label.of("Member", menuBuilder.build())
+        ).build();
+        event.replyModal(modal).queue();
     }
     private void updateWebsite(SlashCommandInteractionEvent event)
     {

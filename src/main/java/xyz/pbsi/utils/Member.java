@@ -1,7 +1,6 @@
 package xyz.pbsi.utils;
 
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 public class Member {
@@ -48,10 +47,15 @@ public class Member {
     public boolean getEquipmentContract(){
         return this.forms.equipmentContract;
     }
-
-
-
-
+    public void setFirstName(String x){this.firstName = x;}
+    public void setLastName(String x){this.lastName = x;}
+    public void setPreferredName(String x){this.preferredName = x;}
+    public void setPronouns(String x){this.pronouns = x;}
+    public void setPhoneNumber(String x){this.phoneNumber = x;}
+    public void setStudentID(String x){this.studentID = x;}
+    public void setEmail(String x){this.email = x;}
+    public void setPermissionSlip(boolean x){this.forms.permissionSlip = x;}
+    public void setEquipmentContract(boolean x){this.forms.equipmentContract = x;}
 }
 
 
