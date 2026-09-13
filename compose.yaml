@@ -7,4 +7,6 @@ services:
       - .env
     restart: unless-stopped
     volumes:
-      - /bhc:/var/lib/bhc
+      - type: volume
+        source: bhc
+        target: /var/lib/bhc
