@@ -313,7 +313,7 @@ public class CommandListener extends ListenerAdapter {
     }
     private void resetAndStop(SlashCommandInteractionEvent event){
         String requiredRole = "1488731960053469337";
-        if(!permissionCheck(event, requiredRole, true)) return;
+        if(!permissionCheck(event, requiredRole, false)) return;
         event.getGuild().retrieveCommands().queue(commands -> {
             for (Command command: commands){
                 command.delete().queue();
