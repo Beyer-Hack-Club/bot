@@ -8,5 +8,7 @@ services:
     restart: unless-stopped
     volumes:
       - type: volume
-        source: bhc/members
+        source: bhc
         target: /var/lib/bhc/data
+volume:
+  - bhc:
