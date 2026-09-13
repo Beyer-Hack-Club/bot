@@ -287,7 +287,7 @@ public class ModalListener extends ListenerAdapter {
                     "\n**Preferred Name**: " + member.getPreferredName() +
                     "\n**Pronouns**: " + member.getPronouns()+
                     "\n**Email**: " + member.getEmail() +
-                    "\n**Phone Number**: " + member.getEmail() +
+                    "\n**Phone Number**: " + member.getPhoneNumber() +
                     "\n**Equipment Contract**: " + member.getEquipmentContract()+
                     "\n**Permission Slip** " + member.getPermissionSlip());
             embedBuilder.setColor(Color.blue);
