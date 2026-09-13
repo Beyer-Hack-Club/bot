@@ -14,11 +14,15 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.pbsi.HCBot;
 
 import java.awt.*;
+import java.io.File;
 
 public class DiscordEventListener extends ListenerAdapter {
+    private static Logger logger = LoggerFactory.getLogger(CommandListener.class);
 
     public HCBot bot;
     private static DiscordEventListener INSTANCE;
@@ -76,6 +80,12 @@ public class DiscordEventListener extends ListenerAdapter {
                 )),
                 Commands.slash("reset-and-stop", "Deletes all commands and stops the bot.")
         ).queue();
+        File folder = new File("/bhc/members/");
+        if(!folder.exists()) {
+            if (!folder.mkdirs()) {
+                logger.error("Failed to make directory!");
+            }
+        }
 
 /*
         commands.addCommands(Commands.slash("example", "Example Command")
