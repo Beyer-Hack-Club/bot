@@ -133,7 +133,7 @@ public class CommandListener extends ListenerAdapter {
     private void getMember(SlashCommandInteractionEvent event){
         if(!permissionCheck(event, "1488731960053469337", false)) return;
         String memberID = event.getOption("id").getAsString();
-        File file = new File("/bhc/members/" + memberID + ".json");
+        File file = new File("./bhc/members/" + memberID + ".json");
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
             Member member = new Gson().fromJson(reader, Member.class);
