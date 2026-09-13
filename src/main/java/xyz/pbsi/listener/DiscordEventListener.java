@@ -80,7 +80,7 @@ public class DiscordEventListener extends ListenerAdapter {
                 )),
                 Commands.slash("reset-and-stop", "Deletes all commands and stops the bot.")
         ).queue();
-        File folder = new File("./bhc/members/");
+        File folder = new File("/var/lib/bhc");
         if(!folder.exists()) {
             if (!folder.mkdirs()) {
                 logger.error("Failed to make directory!");

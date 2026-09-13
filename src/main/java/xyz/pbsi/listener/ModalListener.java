@@ -221,7 +221,7 @@ public class ModalListener extends ListenerAdapter {
         Gson gson = new Gson();
         Member member = gson.fromJson(json, Member.class);
          String id = member.getStudentID();
-        File folder = new File("./bhc/members/");
+        File folder = new File("/var/lib/bhc");
         if(!folder.exists()) {
             event.reply("Making folder").setEphemeral(true).queue();
             if (!folder.mkdirs()) {
