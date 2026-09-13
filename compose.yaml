@@ -10,5 +10,5 @@ services:
       - type: volume
         source: bhc
         target: /var/lib/bhc/data
-volume:
+volumes:
   - bhc:
