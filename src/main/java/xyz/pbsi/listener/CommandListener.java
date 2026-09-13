@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -67,6 +68,9 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "get-member":
                 getMember(event);
+                break;
+            case "reset-and-stop":
+                resetAndStop(event);
                 break;
         }
     }
@@ -246,6 +250,17 @@ public class CommandListener extends ListenerAdapter {
                         Label.of("Old News", oldNews)
                 ).build();
         event.replyModal(modal).queue();
+    }
+    private void resetAndStop(SlashCommandInteractionEvent event){
+        String requiredRole = "1488731960053469337";
+        if(!permissionCheck(event, requiredRole, true)) return;
+        event.getGuild().retrieveCommands().queue(commands -> {
+            for (Command command: commands){
+                command.delete().queue();
+            }
+            System.exit(0);
+        });
+
     }
 
     /**

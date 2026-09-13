@@ -58,12 +58,6 @@ public class DiscordEventListener extends ListenerAdapter {
         //setupAction(jda);
     if(g != null)
     {
-        g.retrieveCommands().queue(commands -> {
-            for (Command command: commands){
-                command.delete().queue();
-            }
-        });
-
         CommandListUpdateAction commands = g.updateCommands();
         commands.addCommands(
                 Commands.slash("uptime", "Bot uptime"),
@@ -79,7 +73,8 @@ public class DiscordEventListener extends ListenerAdapter {
                 Commands.slash("add-member", "Adds a member"),
                 Commands.slash("get-member", "Gets a members info").addOptions(new OptionData(
                         OptionType.STRING, "id", "The Student ID of the member", true
-                ))
+                )),
+                Commands.slash("reset-and-stop", "Deletes all commands and stops the bot.")
         ).queue();
 
 /*
