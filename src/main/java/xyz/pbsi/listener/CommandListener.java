@@ -24,9 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Text;
-import xyz.pbsi.utils.Assets;
-import xyz.pbsi.utils.JSON;
-import xyz.pbsi.utils.Member;
+import xyz.pbsi.utils.*;
 
 import java.awt.*;
 import java.io.*;
@@ -78,6 +76,9 @@ public class CommandListener extends ListenerAdapter {
                 break;
             case "edit-member":
                 editMember(event);
+                break;
+            case "keychain":
+                keyChain(event);
                 break;
         }
     }
@@ -320,6 +321,34 @@ public class CommandListener extends ListenerAdapter {
             }
             System.exit(0);
         });
+
+    }
+    private void keyChain(SlashCommandInteractionEvent event)
+    {
+        try{
+            String search = event.getOption("account").getAsString();
+            if(search.equals("instagram") || search.equals("listmonk")){
+                if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.SOCIALMEDIA), false)) return;
+
+            }else {
+                if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), false)) return;
+            }
+            HashMap<?, ?>  keyChain =  JSON.JSONFileToHashmap(new File(Files.getMainDirectory() + "/data/" + "/keychain.json"));
+            String username = (String) keyChain.get(search +  "-username");
+            String password = (String) keyChain.get(search + "-password");
+            if (username == null || password == null){
+                event.reply("Couldn't find " + search).setEphemeral(true).queue();
+                return;
+            }
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Account Login ("+search+").");
+            eb.setColor(Color.blue);
+            eb.setDescription("Username: " + username + "\nPassword: ``" + password + "``");
+            eb.setFooter("Beyer Hack Club", Assets.getLogo());
+            event.replyEmbeds(eb.build()).setEphemeral(true).queue();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
 
     }
 

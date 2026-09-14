@@ -77,7 +77,14 @@ public class DiscordEventListener extends ListenerAdapter {
                 Commands.slash("add-member", "Adds a member"),
                 Commands.slash("get-member", "Gets a members info"),
                 Commands.slash("reset-and-stop", "Deletes all commands and stops the bot."),
-                Commands.slash("edit-member", "Edits a member.")
+                Commands.slash("edit-member", "Edits a member."),
+                Commands.slash("keychain", "Gets logins for accounts").addOptions(
+                        new OptionData(OptionType.STRING, "account", "The account to get.", true)
+                                .addChoice("Instagram", "instagram")
+                                .addChoice("Email", "email")
+                                .addChoice("Google", "google")
+                                .addChoice("List Monk", "listmonk")
+                )
         ).queue();
         File folder = new File("/var/lib/bhc");
         if(!folder.exists()) {
