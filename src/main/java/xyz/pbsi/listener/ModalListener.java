@@ -245,7 +245,7 @@ public class ModalListener extends ListenerAdapter {
                 case "pronouns":
                     member.setPronouns(newValue);
                 case "phone-number":
-                    member.setPronouns(newValue);
+                    member.setPhoneNumber(newValue);
                     break;
                 case "email":
                     member.setEmail(newValue);
