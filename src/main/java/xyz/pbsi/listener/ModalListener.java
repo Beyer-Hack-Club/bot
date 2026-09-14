@@ -293,7 +293,6 @@ public class ModalListener extends ListenerAdapter {
             embedBuilder.setColor(Color.blue);
             embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
             event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
-            logger.info(String.valueOf(member.getPermissionSlip()));
         } catch (IOException e) {
             event.reply("Error, member not found").setEphemeral(true).queue();
         }
