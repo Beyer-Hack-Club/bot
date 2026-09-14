@@ -60,7 +60,7 @@ public class Member {
 
 
 class Forms{
-    @SerializedName("permission slip")
+    @SerializedName("permission slips")
     boolean permissionSlip;
     @SerializedName("equipment contract")
     boolean equipmentContract;
