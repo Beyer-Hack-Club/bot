@@ -84,6 +84,7 @@ public class DiscordEventListener extends ListenerAdapter {
                                 .addChoice("Email", "email")
                                 .addChoice("Google", "google")
                                 .addChoice("List Monk", "listmonk")
+                                .addChoice("Socials Emails", "socials")
                 )
         ).queue();
         File folder = new File("/var/lib/bhc");

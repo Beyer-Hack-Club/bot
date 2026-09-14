@@ -327,7 +327,7 @@ public class CommandListener extends ListenerAdapter {
     {
         try{
             String search = event.getOption("account").getAsString();
-            if(search.equals("instagram") || search.equals("listmonk")){
+            if(search.equals("instagram") || search.equals("listmonk") || search.equals("socials")){
                 if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.SOCIALMEDIA), false)) return;
 
             }else {
