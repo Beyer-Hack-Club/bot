@@ -154,6 +154,7 @@ public class CommandListener extends ListenerAdapter {
                 if(folderList != null)
                 {
                     for (String s : folderList) {
+                        if(s.equals("data")){continue;}
                         BufferedReader bufferedReader = new BufferedReader(new FileReader("/var/lib/bhc/" + s));
                         String formattedArg = s.replace(".json", "");
                         Member member = gson.fromJson(bufferedReader, Member.class);
