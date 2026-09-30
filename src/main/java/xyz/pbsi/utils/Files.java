@@ -1,5 +1,4 @@
-package xyz.pbsi.utils;
-
+package xyz.pbsi.Utils;
 import java.io.File;
 
 public class Files {

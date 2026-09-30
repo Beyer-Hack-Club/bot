@@ -1,5 +1,4 @@
-package xyz.pbsi.utils;
-
+package xyz.pbsi.Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

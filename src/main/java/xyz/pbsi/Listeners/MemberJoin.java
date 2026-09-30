@@ -1,18 +1,17 @@
-package xyz.pbsi.listener;
+package xyz.pbsi.Listeners;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
-import xyz.pbsi.utils.Assets;
+import org.jetbrains.annotations.NotNull;
+import xyz.pbsi.Utils.*;
 
 public class MemberJoin implements EventListener {
     @Override
-    public void onEvent(GenericEvent genericevent) {
+    public void onEvent(@NotNull GenericEvent genericevent) {
         if(genericevent instanceof GuildMemberJoinEvent event)
         {
             User user = event.getUser();

@@ -3,8 +3,8 @@ package xyz.pbsi;
 import org.apache.commons.cli.*;
 
 public class Main {
+    public static long startTime = System.currentTimeMillis();
 
-    private static Main INSTANCE;
     public static void main(String[] args) {
         Options options = new Options();
         options.addOption(new Option("t", "token", true, "Provide the token during startup."));
@@ -29,9 +29,4 @@ public class Main {
 
 
     }
-    public static Main getInstance()
-    {
-        return INSTANCE;
-    }
-
 }

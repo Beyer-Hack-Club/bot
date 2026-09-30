@@ -1,4 +1,4 @@
-package xyz.pbsi.listener;
+package xyz.pbsi.Listeners;
 
 
 import net.dv8tion.jda.api.components.label.Label;

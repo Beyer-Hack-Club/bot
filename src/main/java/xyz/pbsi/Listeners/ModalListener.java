@@ -1,4 +1,4 @@
-package xyz.pbsi.listener;
+package xyz.pbsi.Listeners;
 
 import com.google.gson.Gson;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -6,13 +6,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.pbsi.utils.Assets;
-import xyz.pbsi.utils.JSON;
-import xyz.pbsi.utils.Member;
+import xyz.pbsi.Utils.*;
 
 import java.awt.*;
 import java.io.*;
@@ -26,7 +23,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ModalListener extends ListenerAdapter {
-    private static Logger logger = LoggerFactory.getLogger(CommandListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
     Dotenv dotenv = Dotenv.load();
     String authorization = dotenv.get("SECRET");
     String apiKey = dotenv.get("APIKEY");
@@ -226,12 +223,12 @@ public class ModalListener extends ListenerAdapter {
     {
         try{
             Gson gson = new Gson();
-            String memberID =  event.getValue("member-select").getAsStringList().getFirst();
+            String memberID =  Objects.requireNonNull(event.getValue("member-select")).getAsStringList().getFirst();
             BufferedReader bufferedReader = new BufferedReader(new FileReader("/var/lib/bhc/" + memberID + ".json"));
             Member member = gson.fromJson(bufferedReader, Member.class);
 
-            String valueEditing = event.getValue("edit-value").getAsStringList().getFirst();
-            String newValue = event.getValue("new-value").getAsString();
+            String valueEditing = Objects.requireNonNull(event.getValue("edit-value")).getAsStringList().getFirst();
+            String newValue = Objects.requireNonNull(event.getValue("new-value")).getAsString();
             switch (valueEditing){
                 case "first-name":
                     member.setFirstName(newValue);
@@ -275,7 +272,7 @@ public class ModalListener extends ListenerAdapter {
 
     private void getMember(ModalInteractionEvent event)
     {
-        String memberID = event.getValue("member-select").getAsStringList().getFirst();
+        String memberID = Objects.requireNonNull(event.getValue("member-select")).getAsStringList().getFirst();
         File file = new File("/var/lib/bhc/" + memberID + ".json");
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));

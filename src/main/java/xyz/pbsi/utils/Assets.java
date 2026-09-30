@@ -1,4 +1,4 @@
-package xyz.pbsi.utils;
+package xyz.pbsi.Utils;
 
 public class Assets {
     public static String getLogo()

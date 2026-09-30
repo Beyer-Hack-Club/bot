@@ -1,4 +1,4 @@
-package xyz.pbsi.utils;
+package xyz.pbsi.Utils;
 
 
 import com.google.gson.annotations.SerializedName;
@@ -52,7 +52,6 @@ public class Member {
     public void setPreferredName(String x){this.preferredName = x;}
     public void setPronouns(String x){this.pronouns = x;}
     public void setPhoneNumber(String x){this.phoneNumber = x;}
-    public void setStudentID(String x){this.studentID = x;}
     public void setEmail(String x){this.email = x;}
     public void setPermissionSlip(boolean x){this.forms.permissionSlip = x;}
     public void setEquipmentContract(boolean x){this.forms.equipmentContract = x;}
