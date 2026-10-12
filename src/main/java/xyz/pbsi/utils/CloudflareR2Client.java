@@ -88,7 +88,6 @@ public class CloudflareR2Client {
             ListObjectsV2Request request = ListObjectsV2Request.builder()
                     .bucket(bucketName)
                     .build();
-
             return s3Client.listObjectsV2(request).contents();
         } catch (S3Exception e) {
             throw new RuntimeException("Failed to list objects in bucket " + bucketName + ": " + e.getMessage(), e);

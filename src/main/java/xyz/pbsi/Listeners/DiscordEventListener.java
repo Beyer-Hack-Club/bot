@@ -64,6 +64,7 @@ public class DiscordEventListener extends ListenerAdapter {
                         .addChoice("Socials Emails", "socials")
         ), new Keychain());
         registerCommand(Commands.slash("upload", "Uploads a file to Beyer Hack Club's user cdn"), new Upload());
+        registerCommand(Commands.slash("my-uploads", "Lists the uploads you've made."), new MyUploads());
         CommandListUpdateAction commands = g.updateCommands();
         commands.addCommands(commandDataList).queue();
         File folder = new File("/var/lib/bhc");
