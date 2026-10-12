@@ -3,21 +3,29 @@ package xyz.pbsi.Listeners;
 import com.google.gson.Gson;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.pbsi.Main;
 import xyz.pbsi.Utils.*;
 
 import java.awt.*;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -53,6 +61,9 @@ public class ModalListener extends ListenerAdapter {
                 break;
             case "get-member":
                 getMember(event);
+                break;
+            case "file-upload":
+                fileUpload(event);
                 break;
             default:
                 event.reply("This modal is misconfigured (Err. Lacking function!)").setEphemeral(true).queue();
@@ -324,6 +335,30 @@ public class ModalListener extends ListenerAdapter {
             return;
         }
          event.reply("Successfully created user").setEphemeral(true).queue();
+    }
+
+    private void fileUpload(ModalInteractionEvent event)  {
+        event.deferReply().setEphemeral(true).queue();
+        Message.Attachment attachment = Objects.requireNonNull(event.getValue("file")).getAsAttachmentList().getFirst();
+        String url =  attachment.getUrl();
+        File dir = new File("/temp");
+        dir.mkdir();
+        try{
+            InputStream in = new URL(url).openStream();
+            Files.copy(in, Paths.get("/temp/", attachment.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+        }catch (IOException e)
+        {
+         event.getHook().sendMessage("An error has occurred").setEphemeral(true).queue();
+         logger.error(e.getMessage());
+        }
+        new CloudflareR2Client(Main.config).putObject("bhc-user-cdn", "upload/" + Objects.requireNonNull(event.getMember()).getId() + "/" + attachment.getFileName(), new File("/temp/" + attachment.getFileName()));
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle("File Upload");
+        eb.setColor(Color.blue);
+        eb.setDescription("Your file has been uploaded! https://uploads.beyerhack.club/upload/" + Objects.requireNonNull(event.getMember()).getId() + "/" + attachment.getFileName() + " .");
+        eb.setFooter("Beyer Hack Club", Assets.getLogo());
+        event.getHook().sendMessageEmbeds(eb.build()).setEphemeral(true).queue();
+        new File("/temp/" + attachment.getFileName()).delete();
     }
 
     /**

@@ -23,7 +23,7 @@ import java.util.Objects;
 import static xyz.pbsi.Utils.Roles.permissionCheck;
 
 public class UpdateWebsite implements DiscordCommand {
-    Logger logger = LoggerFactory.getLogger(CommandListener.class);
+    Logger logger = LoggerFactory.getLogger(UpdateWebsite.class);
     Dotenv dotenv = Dotenv.load();
     String authorization = dotenv.get("SECRET");
     @Override

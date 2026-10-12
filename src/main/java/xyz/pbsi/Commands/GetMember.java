@@ -20,7 +20,7 @@ import static xyz.pbsi.Utils.Roles.permissionCheck;
 public class GetMember implements DiscordCommand {
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
-        Logger logger = LoggerFactory.getLogger(CommandListener.class);
+        Logger logger = LoggerFactory.getLogger(GetMember.class);
         if(!permissionCheck(event, "1488731960053469337", false)) return;
         Gson gson = new Gson();
         StringSelectMenu.Builder menuBuilder = StringSelectMenu.create("member-select")

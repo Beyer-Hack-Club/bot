@@ -5,9 +5,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.pbsi.Interfaces.DiscordCommand;
-import xyz.pbsi.Listeners.CommandListener;
 import xyz.pbsi.Utils.Assets;
-import xyz.pbsi.Utils.Files;
+import xyz.pbsi.Utils.FileDirectories;
 import xyz.pbsi.Utils.JSON;
 import xyz.pbsi.Utils.Roles;
 
@@ -22,7 +21,7 @@ import static xyz.pbsi.Utils.Roles.permissionCheck;
 public class Keychain implements DiscordCommand {
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
-        Logger logger = LoggerFactory.getLogger(CommandListener.class);
+        Logger logger = LoggerFactory.getLogger(Keychain.class);
         try{
             String search = Objects.requireNonNull(event.getOption("account")).getAsString();
             if(search.equals("instagram") || search.equals("listmonk") || search.equals("socials")){
@@ -31,7 +30,7 @@ public class Keychain implements DiscordCommand {
             }else {
                 if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), false)) return;
             }
-            HashMap<?, ?> keyChain =  JSON.JSONFileToHashmap(new File(Files.getMainDirectory() + "/data/" + "/keychain.json"));
+            HashMap<?, ?> keyChain =  JSON.JSONFileToHashmap(new File(FileDirectories.getMainDirectory() + "/data/" + "/keychain.json"));
             String username = (String) keyChain.get(search +  "-username");
             String password = (String) keyChain.get(search + "-password");
             if (username == null || password == null){
