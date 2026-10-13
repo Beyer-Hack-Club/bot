@@ -108,7 +108,7 @@ public class ModalListener extends ListenerAdapter {
                 embedBuilder.setTitle("Error");
                 embedBuilder.setDescription("An error has occurred! " + error);
                 embedBuilder.setColor(Color.red);
-                embedBuilder.setFooter("Beyer Hack Club", "https://s3.beyerhack.club/logos/raster/logo.png");
+                embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
                 event.getHook().sendMessageEmbeds(embedBuilder.build()).setEphemeral(true).queue();
 
             }
@@ -116,7 +116,7 @@ public class ModalListener extends ListenerAdapter {
                 embedBuilder.setTitle("Created Account! :white_check_mark:");
                 embedBuilder.setDescription("Username: `" + username + "`\nPassword: `" +tempPassword + "`\n*You will have to update your password upon signing in.*");
                 embedBuilder.setColor(new Color(23, 223, 62));
-                embedBuilder.setFooter("Beyer Hack Club", "https://s3.beyerhack.club/logos/raster/logo.png");
+                embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
                 event.getHook().sendMessageEmbeds(embedBuilder.build()).setEphemeral(true).queue();
                 event.getUser().openPrivateChannel().flatMap(
                         channel -> channel.sendMessageEmbeds(embedBuilder.build())
@@ -189,7 +189,7 @@ public class ModalListener extends ListenerAdapter {
                 embedBuilder.setDescription("Successfully submitted meeting log!");
                 embedBuilder.setColor(new Color(23, 223, 62));
             }
-            embedBuilder.setFooter("Beyer Hack Club", "https://s3.beyerhack.club/logos/raster/logo.png");
+            embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
             event.getHook().sendMessageEmbeds(embedBuilder.build()).setEphemeral(true).queue();
 
         } catch (URISyntaxException | InterruptedException | IOException e) {
