@@ -14,15 +14,18 @@ import java.util.Objects;
 import static xyz.pbsi.Main.config;
 
 public class MyUploads implements DiscordCommand {
+
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
         CloudflareR2Client client = new CloudflareR2Client(config);
         List<S3Object> objects =  client.listObjects("bhc-user-cdn");
         StringBuilder uploads = new StringBuilder();
+        long size = 0;
         for(S3Object object : objects)
         {
             if(object.key().contains(Objects.requireNonNull(event.getMember()).getId())){
-                uploads.append("- https://uploads.beyerhack.club/").append(object.key()).append("\n");
+                size = (long) (size + (object.size() * 10e-7));
+                uploads.append("- [").append(object.key().replace("upload/" + event.getMember().getId() + "/", "")).append("](https://uploads.beyerhack.club/").append(object.key()).append(")\n");
             }
         }
         if(uploads.isEmpty())
@@ -32,7 +35,7 @@ public class MyUploads implements DiscordCommand {
         }
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Your Uploads");
-        eb.setDescription("**Uploads**: \n" + uploads);
+        eb.setDescription("**Uploads**: \n" + uploads + "\nTotal storage used: " + size + "mb ");
         eb.setColor(Color.blue);
         eb.setFooter("Beyer Hack Club", Assets.getLogo());
         event.replyEmbeds(eb.build()).setEphemeral(true).queue();
