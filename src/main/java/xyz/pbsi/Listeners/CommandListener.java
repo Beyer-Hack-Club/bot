@@ -16,6 +16,7 @@ public class CommandListener extends ListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        //Maps commands to a specific class.
         DiscordCommand command = EventManager.commands.get(event.getName());
         if(command == null){
             event.reply("No executor defined for " + event.getName() + "!").setEphemeral(true).queue();

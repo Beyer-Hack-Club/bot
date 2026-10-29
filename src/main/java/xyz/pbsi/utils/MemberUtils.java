@@ -17,21 +17,28 @@ public class MemberUtils {
     public static SelectMenu getMembersSelectMenu(){
 
         Gson gson = new Gson();
+
+        //Builds out the basic menu formatting
         StringSelectMenu.Builder menuBuilder = StringSelectMenu.create("member-select")
                 .setPlaceholder("Select a member")
                 .setRequiredRange(1,1)
                 .setRequired(true);
 
+
+        //Gets the folder with the list of members
         File folder = new File("/var/lib/bhc");
         String[] folderList = folder.list();
         try{
             if(folderList != null)
             {
+                //Loops through all the files and gets the name (from the JSON) and student ID from file name
                 for (String s : folderList) {
                     if(s.equals("data")){continue;}
                     BufferedReader bufferedReader = new BufferedReader(new FileReader("/var/lib/bhc/" + s));
                     String formattedArg = s.replace(".json", "");
                     Member member = gson.fromJson(bufferedReader, Member.class);
+
+                    //Adds it as an option to the menu
                     menuBuilder = menuBuilder.addOption(formattedArg + " | " + member.getFirstName(), formattedArg);
                 }
 

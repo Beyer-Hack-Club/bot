@@ -41,6 +41,7 @@ public class DiscordEventListener extends ListenerAdapter {
         Guild g = jda.getGuildById("1488731919037366482");
     if(g != null)
     {
+        //Adds all the commands to the registration list
         registerCommand(Commands.slash("info", "Some basic information about the club!"), new Info());
         registerCommand(Commands.slash("uptime", "Bot uptime"), new Uptime());
         registerCommand(Commands.slash("log", "Adds a new log to the website"), new Log());
@@ -65,8 +66,12 @@ public class DiscordEventListener extends ListenerAdapter {
         ), new Keychain());
         registerCommand(Commands.slash("upload", "Uploads a file to Beyer Hack Club's user cdn"), new Upload());
         registerCommand(Commands.slash("my-uploads", "Lists the uploads you've made."), new MyUploads());
+
+        //Registers the command with Discord
         CommandListUpdateAction commands = g.updateCommands();
         commands.addCommands(commandDataList).queue();
+
+        //Creates a data folder
         File folder = new File("/var/lib/bhc");
         if(!folder.exists()) {
             if (!folder.mkdirs()) {

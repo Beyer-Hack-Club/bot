@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.pbsi.Interfaces.DiscordCommand;
+import xyz.pbsi.Utils.Roles;
 
 import java.util.Objects;
 
@@ -15,15 +16,14 @@ public class ResetAndStop implements DiscordCommand {
 
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
-        String requiredRole = "1488731960053469337";
-        if(!permissionCheck(event, requiredRole, false)) return;
+        if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), false)) return;
 
         try{
             Objects.requireNonNull(event.getGuild()).retrieveCommands().queue(commands -> {
                 for (Command command: commands){
+                    //Deletes all commands (Used if a command needs to be removed or edited, all commands are re-added on bot boot)
                     command.delete().queue();
                 }
-
 
                 System.exit(0);
             });

@@ -24,9 +24,10 @@ import static xyz.pbsi.Utils.Roles.permissionCheck;
 public class EditMember implements DiscordCommand {
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
-        Logger logger = LoggerFactory.getLogger(CommandListener.class);
         if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), false)) return;
 
+
+        //Creates a select menu with the editable values
         StringSelectMenu editValue = StringSelectMenu.create("edit-value")
                 .addOption("First Name", "first-name")
                 .addOption("Last Name", "last-name")
@@ -38,8 +39,12 @@ public class EditMember implements DiscordCommand {
                 .addOption("Contract", "equipment-contract")
                 .setRequiredRange(1,1)
                 .build();
+
+        //Creates a text input to update the value
         TextInput value = TextInput.create("new-value",  TextInputStyle.SHORT).build();
+        //Builds the modal
         Modal modal = Modal.create("edit-member", "Edit a member").addComponents(
+                //Member selection menu is gotten from util class
                 Label.of("Member", MemberUtils.getMembersSelectMenu()),
                 Label.of("Value to edit", editValue),
                 Label.of("New Value", value)

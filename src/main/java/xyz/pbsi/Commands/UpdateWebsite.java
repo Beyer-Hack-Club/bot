@@ -9,6 +9,7 @@ import xyz.pbsi.Interfaces.DiscordCommand;
 import xyz.pbsi.Listeners.CommandListener;
 import xyz.pbsi.Utils.Assets;
 import xyz.pbsi.Utils.JSON;
+import xyz.pbsi.Utils.Roles;
 
 import java.awt.*;
 import java.io.IOException;
@@ -28,27 +29,45 @@ public class UpdateWebsite implements DiscordCommand {
     String authorization = dotenv.get("SECRET");
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
+
+        //Disables Discord's auto timeout (Allows the bot to respond)
         event.deferReply().setEphemeral(true).queue();
+
+        //Creates a client to make web requests
         HttpClient client = HttpClient.newHttpClient();
-        String requiredRole = "1488731960053469337";
-        if(!permissionCheck(event, requiredRole, true)) return;
+        if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), true)) return;
+
+        //Gets the values from the command arguments and verifies that they aren't null
         String value = Objects.requireNonNull(event.getOption("value")).getAsString().toLowerCase();
         String text = Objects.requireNonNull(event.getOption("text")).getAsString();
+
+        //Puts the values in a Hash Map
         HashMap<String, String> values = new HashMap<>();
         values.put(value, text);
+
+        //Converts the Hash Map to JSON for the browser
         String json = JSON.hashMapToJSON(values);
         try{
+
+            //Builds the web request
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI("https://api.beyerhack.club/website/update"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", authorization)
                     .method("POST", HttpRequest.BodyPublishers.ofString(json))
                     .build();
+            //Sends and gets the response from the http request
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            client.close();
+
+            //Logs any errors
             if(response.statusCode() != 200)
             {
                 logger.warn(response.body());
             }
+
+            //Handles errors
+            //Checks if the API Key is invalid
             if(response.statusCode() == 403)
             {
                 EmbedBuilder eb = new EmbedBuilder();
@@ -58,6 +77,7 @@ public class UpdateWebsite implements DiscordCommand {
                 event.replyEmbeds(eb.build()).setEphemeral(true).queue();
                 return;
             } else if (response.statusCode() != 200) {
+                //Handles all other errors
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setTitle("Error");
                 eb.setDescription("An error has occurred! Status Code: " + response.statusCode());
@@ -65,6 +85,8 @@ public class UpdateWebsite implements DiscordCommand {
                 event.replyEmbeds(eb.build()).setEphemeral(true).queue();
                 return;
             }
+
+            //Sends the success message if the website was updated successfully
             EmbedBuilder eb = new EmbedBuilder();
             String embedMessage = "";
             if(value.equals("announcement"))
@@ -79,6 +101,7 @@ public class UpdateWebsite implements DiscordCommand {
             event.getHook().sendMessageEmbeds(eb.build()).setEphemeral(true).queue();
         }catch (URISyntaxException | IOException | InterruptedException e )
         {
+            //Catches errors
             event.getHook().sendMessage("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
         }
 

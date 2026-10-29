@@ -17,6 +17,7 @@ public class GetMember implements DiscordCommand {
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
         Logger logger = LoggerFactory.getLogger(GetMember.class);
+        //Builds a modal for getting a member, member selection menu is got from util class
         if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), false)) return;
         Modal modal = Modal.create("get-member", "Get a member's info").addComponents(
                 Label.of("Member", MemberUtils.getMembersSelectMenu())

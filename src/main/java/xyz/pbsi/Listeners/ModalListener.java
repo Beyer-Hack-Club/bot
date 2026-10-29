@@ -39,6 +39,7 @@ public class ModalListener extends ListenerAdapter {
 
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+        //Maps the event to the executor function, passes the interaction event so that the functions can reply to it.
         switch (event.getCustomId()){
             case "survey":
                 survey(event);
@@ -130,7 +131,10 @@ public class ModalListener extends ListenerAdapter {
 
     private void submitLog(ModalInteractionEvent event)
     {
+        //Disables Discord's auto timeout
         event.deferReply(true).queue();
+
+        //Gets the fields from the modal
         String dateAndDuration = getString(event, "date");
         String objective = getString(event, "objective");
         String activities = getString(event, "activities");
@@ -144,6 +148,7 @@ public class ModalListener extends ListenerAdapter {
             return;
         }
         boolean settingDate = true;
+        //Separates the date and duration (Modals were too small to fit all the information)
         for (int i = 0; i < dateAndDuration.length(); i++) {
             if(dateAndDuration.charAt(i) == '|')
             {
@@ -161,6 +166,7 @@ public class ModalListener extends ListenerAdapter {
 
         String apiURL = "https://api.beyerhack.club/logs/meeting";
 
+        //Creates the post request
         HttpClient client = HttpClient.newHttpClient();
         try {
             HashMap<String, String> webBody = new HashMap<>();
@@ -179,6 +185,7 @@ public class ModalListener extends ListenerAdapter {
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             EmbedBuilder embedBuilder = new EmbedBuilder();
+            //Logs errors if the server responds with the wrong status code.
             if(response.statusCode() != 200)
             {
                 logger.error("{}{}", response.statusCode(), response.body());
@@ -200,20 +207,26 @@ public class ModalListener extends ListenerAdapter {
     private void survey(ModalInteractionEvent event)
     {
         String discordUsername = event.getUser().getName();
+        //Gets the fields from the modals
         String name = getString(event, "name");
         String learn = getString(event, "learn");
         String available = getString(event, "availability");
         String experience = getString(event, "experience");
         String comments = getString(event, "comments");
+
+        //Channel for storing survey responses
         TextChannel channel = Objects.requireNonNull(event.getGuild()).getTextChannelById("1501836882936332308");
         assert channel != null;
 
+        //Handles empty fields
         if (comments.isEmpty()) {
             comments = "None provided!";
         }
         if (experience.isEmpty()) {
             experience = "None shared!";
         }
+
+        //Builds the embed to store the survey information in
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(new Color(35, 255, 0));
         eb.setTitle("Survey Input!");
@@ -234,12 +247,19 @@ public class ModalListener extends ListenerAdapter {
     {
         try{
             Gson gson = new Gson();
+            //Gets the member from the dropdown (It returns a list, but it will *always* have a length of one, so use .getFirst())
             String memberID =  Objects.requireNonNull(event.getValue("member-select")).getAsStringList().getFirst();
+
+            //Created the reader to read the content from inside the file
             BufferedReader bufferedReader = new BufferedReader(new FileReader("/var/lib/bhc/" + memberID + ".json"));
+            //Converts the JSON into the design specified by the Member class
             Member member = gson.fromJson(bufferedReader, Member.class);
 
+            //Gets the values from the modal to modify
             String valueEditing = Objects.requireNonNull(event.getValue("edit-value")).getAsStringList().getFirst();
             String newValue = Objects.requireNonNull(event.getValue("new-value")).getAsString();
+
+            //Finds (and edits) the value specified in the modal
             switch (valueEditing){
                 case "first-name":
                     member.setFirstName(newValue);
@@ -266,11 +286,13 @@ public class ModalListener extends ListenerAdapter {
                     break;
             }
             try{
+                //Converts the Member object to JSON and writes it to the pre-existing file
                 FileWriter fileWriter = new FileWriter("/var/lib/bhc/" + memberID + ".json");
                 fileWriter.write(gson.toJson(member));
                 fileWriter.close();
                 event.reply("Successfully edited " + valueEditing + " to " + newValue + "!").setEphemeral(true).queue();
             } catch (IOException e) {
+                //Logs the exception if the file couldn't be written.
                 logger.error(e.getMessage());
                 event.reply("An error has occurred: " + e.getMessage()).setEphemeral(true).queue();
             }
@@ -283,11 +305,16 @@ public class ModalListener extends ListenerAdapter {
 
     private void getMember(ModalInteractionEvent event)
     {
+        //Gets the member from the drop-down (Length of 1 always)
         String memberID = Objects.requireNonNull(event.getValue("member-select")).getAsStringList().getFirst();
+        //Gets the file containing the member information
         File file = new File("/var/lib/bhc/" + memberID + ".json");
         try{
+            //Reads the contents of the file and converts it into a Member object.
             BufferedReader reader = new BufferedReader(new FileReader(file));
             Member member = new Gson().fromJson(reader, Member.class);
+
+            //Creates the message containing the member information.
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Member - " + member.getFirstName());
             embedBuilder.setDescription("**First Name**: " + member.getFirstName()
@@ -302,16 +329,22 @@ public class ModalListener extends ListenerAdapter {
             embedBuilder.setFooter("Beyer Hack Club", Assets.getLogo());
             event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue();
         } catch (IOException e) {
+            //Handles any error with reading and writing files
             event.reply("Error, member not found").setEphemeral(true).queue();
         }
     }
+
     private void createUser(ModalInteractionEvent event)
     {
+        //Gets the raw JSON
         String json = getString(event, "json");
         Gson gson = new Gson();
         Member member = gson.fromJson(json, Member.class);
-         String id = member.getStudentID();
+        //Gets the student ID to be used as the file name
+        String id = member.getStudentID();
         File folder = new File("/var/lib/bhc");
+
+        //Creates the data folder and handles any errors with such
         if(!folder.exists()) {
             event.reply("Making folder").setEphemeral(true).queue();
             if (!folder.mkdirs()) {
@@ -319,17 +352,22 @@ public class ModalListener extends ListenerAdapter {
                 return;
             }
         }
+        //Creates the file object to be written
         File file = new File(folder + "/" + id+".json");
+
+        //Checks if the member already exists
         if(file.exists())
         {
             event.reply("err (exists)").setEphemeral(true).queue();
             return;
         }
         try{
+            //Writes the file
             FileWriter fileWriter = new FileWriter(folder + "/" + id + ".json");
             fileWriter.write(json);
             fileWriter.close();
         } catch (IOException e) {
+            //Handles errors with reading and writing files
             logger.error(e.getMessage());
             event.reply(e.getMessage()).setEphemeral(true).queue();
             return;
@@ -338,12 +376,20 @@ public class ModalListener extends ListenerAdapter {
     }
 
     private void fileUpload(ModalInteractionEvent event)  {
+        //Disables Discord's auto timeout (Gives the bot more time to respond)
         event.deferReply().setEphemeral(true).queue();
+
+        //Gets the file as an attachment, list is always one so get first
         Message.Attachment attachment = Objects.requireNonNull(event.getValue("file")).getAsAttachmentList().getFirst();
+
+        //Gets the URL of the attachment uploaded to Discord (Attachments in modals are links as they are uploaded to Discord's CDN)
         String url =  attachment.getUrl();
+
+        //Creates a temp folder to download the files before re-uploading them
         File dir = new File("/temp");
         dir.mkdir();
         try{
+            //Downloads the file
             InputStream in = new URL(url).openStream();
             Files.copy(in, Paths.get("/temp/", attachment.getFileName()), StandardCopyOption.REPLACE_EXISTING);
         }catch (IOException e)
@@ -351,18 +397,24 @@ public class ModalListener extends ListenerAdapter {
          event.getHook().sendMessage("An error has occurred").setEphemeral(true).queue();
          logger.error(e.getMessage());
         }
+
+        //Uploads the file to Cloudflare R2 Object Storage
         new CloudflareR2Client(Main.config).putObject("bhc-user-cdn", "upload/" + Objects.requireNonNull(event.getMember()).getId() + "/" + attachment.getFileName(), new File("/temp/" + attachment.getFileName()));
+
+        //Responds with the link
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("File Upload");
         eb.setColor(Color.blue);
         eb.setDescription("Your file has been uploaded! https://uploads.beyerhack.club/upload/" + Objects.requireNonNull(event.getMember()).getId() + "/" + attachment.getFileName() + " .");
         eb.setFooter("Beyer Hack Club", Assets.getLogo());
         event.getHook().sendMessageEmbeds(eb.build()).setEphemeral(true).queue();
+
+        //Deletes the temp file
         new File("/temp/" + attachment.getFileName()).delete();
     }
 
     /**
-     *
+     * Gets the string from a modal without allowing null values.
      * @param event The modal event, used for the context of getting the customId.
      * @param customId The id to identify
      * @return The string, not null.

@@ -13,7 +13,7 @@ public class EventManager {
     public static HashMap<String, DiscordCommand> commands = new HashMap<>();
     public static ArrayList<SlashCommandData> commandDataList = new ArrayList<>();
     /**
-     *
+     * Used for mapping commands to a specific executor.
      * @param command The Discord Slash Command
      * @param executor The command executor.
      */

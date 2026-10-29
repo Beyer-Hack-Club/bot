@@ -6,13 +6,15 @@ import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.modals.Modal;
 import xyz.pbsi.Interfaces.DiscordCommand;
+import xyz.pbsi.Utils.Roles;
 
 import static xyz.pbsi.Utils.Roles.permissionCheck;
 
 public class AddMember implements DiscordCommand {
     @Override
     public void commandExecutor(SlashCommandInteractionEvent event) {
-        if(!permissionCheck(event, "1488731960053469337", false)) return;
+        if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), false)) return;
+        //Builds a modal for adding members
         TextInput json = TextInput.create("json", TextInputStyle.PARAGRAPH)
                 .setRequired(true)
                 .build();

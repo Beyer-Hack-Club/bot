@@ -25,7 +25,7 @@ public class Keychain implements DiscordCommand {
         try{
             String search = Objects.requireNonNull(event.getOption("account")).getAsString();
             if(search.equals("instagram") || search.equals("listmonk") || search.equals("socials")){
-                if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.SOCIALMEDIA), false)) return;
+                if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.SOCIALS), false)) return;
 
             }else {
                 if(!permissionCheck(event, Roles.getRoleID(Roles.RolesList.LEADERSHIP), false)) return;
